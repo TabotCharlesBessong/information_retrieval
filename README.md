@@ -25,30 +25,47 @@ See:
 2. roadmap.md: semester-aligned roadmap and phases.
 3. timeline.md: week-by-week implementation timeline.
 4. app/api: FastAPI service scaffold.
-5. docker-compose.yml: local stack orchestration.
+5. app/pipeline: ingestion, parsing, and indexing pipeline.
 
-## Local quickstart
+## Local quickstart (recommended)
 
-Prerequisites:
+This mode uses SQLite for storage and local search from parsed documents.
 
-1. Docker Desktop (or Docker Engine + Compose).
-2. Python 3.11+ (optional for local non-container runs).
-
-Start stack:
+1. Create and activate a virtual environment.
+2. Install dependencies:
 
 ```bash
-docker compose up --build
+pip install -r app/pipeline/requirements.txt
+pip install -r app/api/requirements.txt
 ```
 
-Validate API:
-
-1. Health: http://localhost:8000/health
-2. Search stub: http://localhost:8000/search?q=fintech
-
-Stop stack:
+3. Set local mode env vars in your shell:
 
 ```bash
-docker compose down
+$env:SEARCH_BACKEND="sqlite"
+$env:DATABASE_URL="sqlite:///./.data/ir.db"
+```
+
+4. Run the pipeline:
+
+```bash
+python app/pipeline/src/ingest_sources.py
+python app/pipeline/src/fetch_and_dedupe.py
+python app/pipeline/src/parse_documents.py
+```
+
+5. Start API:
+
+```bash
+uvicorn app.api.src.main:app --reload --port 8000
+```
+
+6. Test:
+
+```bash
+curl "http://localhost:8000/health"
+curl "http://localhost:8000/search?q=african%20startup%20funding&mode=bm25&page=1&size=10"
+curl "http://localhost:8000/search?q=african%20startup%20funding&mode=boolean&page=1&size=10"
 ```
 
 ## Next target
@@ -98,7 +115,7 @@ Artifacts:
 3. app/pipeline/src/index_documents.py
 4. app/api/src/main.py
 
-Index parsed documents:
+Index parsed documents (Elasticsearch mode):
 
 ```bash
 python app/pipeline/src/index_documents.py
@@ -235,7 +252,7 @@ frontend/
    nextjs-ui/
 
 infra/
-   docker-compose.yml
+   local-dev-notes.md
 ```
 
 ---
