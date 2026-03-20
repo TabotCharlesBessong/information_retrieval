@@ -68,9 +68,9 @@ curl "http://localhost:8000/search?q=african%20startup%20funding&mode=bm25&page=
 curl "http://localhost:8000/search?q=african%20startup%20funding&mode=boolean&page=1&size=10"
 ```
 
-## Next target
+## Current status
 
-Phase B implementation: crawler/feed ingestion, parsing pipeline, and text-statistics instrumentation.
+Phase F implementation is complete: filtering, profile-aware reranking, and content-based recommendations are available in the API.
 
 ## Phase B quickstart
 
@@ -152,6 +152,40 @@ python app/api/src/build_eval_corpus.py
 python app/api/src/evaluate_metrics.py
 python app/api/src/efficiency_benchmark.py
 python app/api/src/tune_significance.py
+```
+
+## Phase F quickstart
+
+Artifacts:
+
+1. docs/phase-f/implementation-guide.md
+2. docs/phase-f/phase-f-checklist.md
+3. app/api/src/filtering_recommendation.py
+4. app/api/src/main.py
+5. app/api/src/search_backend.py
+
+Run API:
+
+```bash
+uvicorn app.api.src.main:app --reload --port 8000
+```
+
+Try filtering/profile-aware search:
+
+```bash
+curl "http://localhost:8000/search?q=african%20fintech&must_include=funding&exclude_source=WeeTracker&profile_interests=payments&profile_preferred_sources=TechCabal"
+```
+
+Try recommendations:
+
+```bash
+curl "http://localhost:8000/recommendations?seed_doc_id=3&size=5"
+```
+
+Run Phase F tests:
+
+```bash
+python -m unittest app.api.src.test_phase_f
 ```
 
 ---
