@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 import requests
+from requests import RequestException
 from sqlalchemy import asc
 
 from db import get_session
@@ -36,11 +37,17 @@ def fetch_and_store(queue_id: int, url: str, source_id: int) -> None:
         html = ""
         status_code = None
     else:
-        resp = requests.get(url, timeout=20)
-        status_code = resp.status_code
-        html = resp.text if resp.ok else ""
-        status = "fetched" if resp.ok else "fetch_failed"
-        message = f"HTTP {status_code}"
+        try:
+            resp = requests.get(url, timeout=20)
+            status_code = resp.status_code
+            html = resp.text if resp.ok else ""
+            status = "fetched" if resp.ok else "fetch_failed"
+            message = f"HTTP {status_code}"
+        except RequestException as exc:
+            status = "fetch_failed"
+            message = f"request_error: {exc}"
+            html = ""
+            status_code = None
 
     content_hash = hashlib.sha256(html.encode("utf-8")).hexdigest() if html else None
 

@@ -70,7 +70,7 @@ These metrics become part of the evaluation dashboard and influence tokenizer, s
 
 ## 5. Deployment and Reliability
 
-* Containerized services via Docker Compose first, Kubernetes later.
+* Local-first runtime (Python + SQLite) for development, with optional containerization only when explicitly needed.
 * Queue-based decoupling between acquisition and processing.
 * Redis cache for frequent queries and spell suggestions.
 * Observability: Prometheus metrics + Grafana dashboards + structured logs.

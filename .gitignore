@@ -1,1 +1,9 @@
 *.pyc
+*.env
+
+# Python bytecode/cache directories
+__pycache__/
+
+# Local development database artifacts
+.data/
+*.db

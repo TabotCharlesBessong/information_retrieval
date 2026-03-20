@@ -25,35 +25,52 @@ See:
 2. roadmap.md: semester-aligned roadmap and phases.
 3. timeline.md: week-by-week implementation timeline.
 4. app/api: FastAPI service scaffold.
-5. docker-compose.yml: local stack orchestration.
+5. app/pipeline: ingestion, parsing, and indexing pipeline.
 
-## Local quickstart
+## Local quickstart (recommended)
 
-Prerequisites:
+This mode uses SQLite for storage and local search from parsed documents.
 
-1. Docker Desktop (or Docker Engine + Compose).
-2. Python 3.11+ (optional for local non-container runs).
-
-Start stack:
+1. Create and activate a virtual environment.
+2. Install dependencies:
 
 ```bash
-docker compose up --build
+pip install -r app/pipeline/requirements.txt
+pip install -r app/api/requirements.txt
 ```
 
-Validate API:
-
-1. Health: http://localhost:8000/health
-2. Search stub: http://localhost:8000/search?q=fintech
-
-Stop stack:
+3. Set local mode env vars in your shell:
 
 ```bash
-docker compose down
+$env:SEARCH_BACKEND="sqlite"
+$env:DATABASE_URL="sqlite:///./.data/ir.db"
 ```
 
-## Next target
+4. Run the pipeline:
 
-Phase B implementation: crawler/feed ingestion, parsing pipeline, and text-statistics instrumentation.
+```bash
+python app/pipeline/src/ingest_sources.py
+python app/pipeline/src/fetch_and_dedupe.py
+python app/pipeline/src/parse_documents.py
+```
+
+5. Start API:
+
+```bash
+uvicorn app.api.src.main:app --reload --port 8000
+```
+
+6. Test:
+
+```bash
+curl "http://localhost:8000/health"
+curl "http://localhost:8000/search?q=african%20startup%20funding&mode=bm25&page=1&size=10"
+curl "http://localhost:8000/search?q=african%20startup%20funding&mode=boolean&page=1&size=10"
+```
+
+## Current status
+
+Phase F implementation is complete: filtering, profile-aware reranking, and content-based recommendations are available in the API.
 
 ## Phase B quickstart
 
@@ -88,6 +105,88 @@ alembic revision --autogenerate -m "describe change"
 ```
 
 Reference docs: app/pipeline/migrations/README.md
+
+## Phase C quickstart
+
+Artifacts:
+
+1. docs/phase-c/implementation-guide.md
+2. docs/phase-c/phase-c-checklist.md
+3. app/pipeline/src/index_documents.py
+4. app/api/src/main.py
+
+Index parsed documents (Elasticsearch mode):
+
+```bash
+python app/pipeline/src/index_documents.py
+```
+
+Run API:
+
+```bash
+uvicorn app.api.src.main:app --reload --port 8000
+```
+
+Search examples:
+
+```bash
+curl "http://localhost:8000/search?q=african%20startup%20funding&mode=bm25&page=1&size=10"
+curl "http://localhost:8000/search?q=african%20startup%20funding&mode=boolean&page=1&size=10"
+```
+
+## Phase E quickstart
+
+Artifacts:
+
+1. docs/phase-e/implementation-guide.md
+2. docs/phase-e/phase-e-checklist.md
+3. app/api/src/build_eval_corpus.py
+4. app/api/src/evaluate_metrics.py
+5. app/api/src/efficiency_benchmark.py
+6. app/api/src/tune_significance.py
+
+Run evaluation workflow:
+
+```bash
+python app/api/src/build_eval_corpus.py
+python app/api/src/evaluate_metrics.py
+python app/api/src/efficiency_benchmark.py
+python app/api/src/tune_significance.py
+```
+
+## Phase F quickstart
+
+Artifacts:
+
+1. docs/phase-f/implementation-guide.md
+2. docs/phase-f/phase-f-checklist.md
+3. app/api/src/filtering_recommendation.py
+4. app/api/src/main.py
+5. app/api/src/search_backend.py
+
+Run API:
+
+```bash
+uvicorn app.api.src.main:app --reload --port 8000
+```
+
+Try filtering/profile-aware search:
+
+```bash
+curl "http://localhost:8000/search?q=african%20fintech&must_include=funding&exclude_source=WeeTracker&profile_interests=payments&profile_preferred_sources=TechCabal"
+```
+
+Try recommendations:
+
+```bash
+curl "http://localhost:8000/recommendations?seed_doc_id=3&size=5"
+```
+
+Run Phase F tests:
+
+```bash
+python -m unittest app.api.src.test_phase_f
+```
 
 ---
 
@@ -207,7 +306,7 @@ frontend/
    nextjs-ui/
 
 infra/
-   docker-compose.yml
+   local-dev-notes.md
 ```
 
 ---

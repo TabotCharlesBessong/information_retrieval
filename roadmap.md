@@ -13,7 +13,7 @@ This roadmap is now tied to the DSC608 course progression and the new course res
 * Key activities
   1. Define domain corpus, relevance assumptions, and success criteria.
   2. Produce architecture baseline: text acquisition, transformation, indexing, interaction, ranking, evaluation.
-  3. Set up development stack: Python, FastAPI, Elasticsearch, PostgreSQL, Docker.
+  3. Set up development stack: Python, FastAPI, Elasticsearch, PostgreSQL (local SQLite for default dev mode).
 
 * Deliverables
   * Problem statement and relevance definition.

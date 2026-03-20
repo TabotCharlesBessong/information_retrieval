@@ -16,8 +16,6 @@
 
 - [x] FastAPI service skeleton created.
 - [x] API dependencies pinned.
-- [x] API Dockerfile added.
-- [x] Docker Compose stack added (API + Elasticsearch + PostgreSQL).
 - [x] Environment template added.
 
 ## Next Hand-off to Phase B
