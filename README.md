@@ -78,6 +78,17 @@ python app/pipeline/src/parse_documents.py
 python app/pipeline/src/text_stats_report.py
 ```
 
+## Migration workflow (Alembic)
+
+From app/pipeline:
+
+```bash
+alembic upgrade head
+alembic revision --autogenerate -m "describe change"
+```
+
+Reference docs: app/pipeline/migrations/README.md
+
 ---
 
 ## Phase 2 — Basic Search Engine (4 weeks)
