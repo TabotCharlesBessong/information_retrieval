@@ -443,3 +443,63 @@ def local_suggestions(q: str, limit: int = 5) -> list[str]:
         if len(unique) >= limit:
             break
     return unique
+
+
+def get_document_by_id(doc_id: str) -> dict | None:
+    backend = get_search_backend()
+    if backend == "sqlite":
+        db_path = get_sqlite_path()
+        if not os.path.exists(db_path):
+            return None
+
+        with sqlite3.connect(db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            row = conn.execute(
+                """
+                SELECT
+                    p.id,
+                    COALESCE(p.title, '') AS title,
+                    COALESCE(p.body_text, '') AS body_text,
+                    p.url,
+                    p.processed_at,
+                    COALESCE(s.name, '') AS source
+                FROM parsed_documents p
+                LEFT JOIN raw_documents r ON r.id = p.raw_document_id
+                LEFT JOIN sources s ON s.id = r.source_id
+                WHERE p.id = ?
+                LIMIT 1
+                """,
+                (doc_id,),
+            ).fetchone()
+
+        if row is None:
+            return None
+
+        return {
+            "id": str(row["id"]),
+            "title": row["title"] or "",
+            "body": row["body_text"] or "",
+            "source": row["source"] or "",
+            "published_at": str(row["processed_at"] or ""),
+            "url": row["url"] or "",
+            "score": 0.0,
+        }
+
+    es = get_es()
+    if not es.indices.exists(index=INDEX_NAME):
+        return None
+
+    hit = es.get(index=INDEX_NAME, id=str(doc_id), ignore=[404])
+    if not hit or not hit.get("found"):
+        return None
+
+    src = hit.get("_source", {})
+    return {
+        "id": str(src.get("id", hit.get("_id", ""))),
+        "title": src.get("title", ""),
+        "body": src.get("body", ""),
+        "source": src.get("source", ""),
+        "published_at": src.get("published_at", ""),
+        "url": src.get("url", ""),
+        "score": 0.0,
+    }
