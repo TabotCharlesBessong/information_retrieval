@@ -55,6 +55,40 @@ docker compose down
 
 Phase B implementation: crawler/feed ingestion, parsing pipeline, and text-statistics instrumentation.
 
+## Phase B quickstart
+
+Artifacts:
+
+1. docs/phase-b/implementation-guide.md
+2. docs/phase-b/phase-b-checklist.md
+3. app/pipeline/src/*.py
+
+Install pipeline dependencies:
+
+```bash
+pip install -r app/pipeline/requirements.txt
+```
+
+Run Phase B scripts:
+
+```bash
+python app/pipeline/src/ingest_sources.py
+python app/pipeline/src/fetch_and_dedupe.py
+python app/pipeline/src/parse_documents.py
+python app/pipeline/src/text_stats_report.py
+```
+
+## Migration workflow (Alembic)
+
+From app/pipeline:
+
+```bash
+alembic upgrade head
+alembic revision --autogenerate -m "describe change"
+```
+
+Reference docs: app/pipeline/migrations/README.md
+
 ---
 
 ## Phase 2 — Basic Search Engine (4 weeks)
