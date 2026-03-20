@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-03-20T17:02:52.030343",
+  "query_performance": {
+    "latency": {
+      "bm25": {
+        "count": 25.0,
+        "avg_ms": 14.886999998707324,
+        "p95_ms": 52.71069999434985,
+        "min_ms": 6.401499995263293,
+        "max_ms": 70.82810001156759
+      },
+      "boolean": {
+        "count": 25.0,
+        "avg_ms": 23.475931999273598,
+        "p95_ms": 53.98830000194721,
+        "min_ms": 6.320600004983135,
+        "max_ms": 137.14310000068508
+      },
+      "probabilistic": {
+        "count": 25.0,
+        "avg_ms": 25.719847999862395,
+        "p95_ms": 87.32310000050347,
+        "min_ms": 6.76940000266768,
+        "max_ms": 155.12910000688862
+      }
+    },
+    "throughput_qps": 46.81444843842549,
+    "total_queries": 75,
+    "total_seconds": 1.602069499946083
+  },
+  "indexing_performance": {
+    "backend": "sqlite",
+    "indexing_time_seconds": null,
+    "status": "skipped (indexing benchmark currently implemented for Elasticsearch mode)"
+  }
+}
