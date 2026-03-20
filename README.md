@@ -170,6 +170,11 @@ Run API:
 uvicorn app.api.src.main:app --reload --port 8000
 ```
 
+Open UI:
+
+1. Browser URL: http://localhost:8000/
+2. The page calls `/search` and `/recommendations` on the same FastAPI server.
+
 Try filtering/profile-aware search:
 
 ```bash
