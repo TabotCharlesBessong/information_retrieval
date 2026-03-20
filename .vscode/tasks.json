@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "docker-check-once",
+			"type": "shell",
+			"command": "docker version",
+			"isBackground": false
+		},
+		{
+			"label": "docker-service-restart",
+			"type": "shell",
+			"command": "powershell -NoProfile -Command \"Start-Process '$Env:ProgramFiles\\Docker\\Docker\\Docker Desktop.exe'; Start-Sleep -Seconds 10; docker version\"",
+			"isBackground": false
+		},
+		{
+			"label": "docker-check-once-2",
+			"type": "shell",
+			"command": "docker version",
+			"isBackground": false
+		}
+	]
+}

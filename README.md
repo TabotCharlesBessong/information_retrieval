@@ -89,6 +89,34 @@ alembic revision --autogenerate -m "describe change"
 
 Reference docs: app/pipeline/migrations/README.md
 
+## Phase C quickstart
+
+Artifacts:
+
+1. docs/phase-c/implementation-guide.md
+2. docs/phase-c/phase-c-checklist.md
+3. app/pipeline/src/index_documents.py
+4. app/api/src/main.py
+
+Index parsed documents:
+
+```bash
+python app/pipeline/src/index_documents.py
+```
+
+Run API:
+
+```bash
+uvicorn app.api.src.main:app --reload --port 8000
+```
+
+Search examples:
+
+```bash
+curl "http://localhost:8000/search?q=african%20startup%20funding&mode=bm25&page=1&size=10"
+curl "http://localhost:8000/search?q=african%20startup%20funding&mode=boolean&page=1&size=10"
+```
+
 ---
 
 ## Phase 2 — Basic Search Engine (4 weeks)
