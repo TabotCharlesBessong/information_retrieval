@@ -1,321 +1,59 @@
 # information_retrieval
 
-Building a **search engine** is a big but extremely valuable project. If designed well, it can teach you **distributed systems, information retrieval, data engineering, ranking algorithms, and scalable backend design**—skills used by companies like Google, Bing, and DuckDuckGo.
+Vertical information retrieval project aligned to DSC608, implemented incrementally by roadmap phase.
 
-I'll outline a **practical, production-style plan** that an engineer or startup would follow.
+Current target vertical: **African technology and startup news**.
 
----
+## Phase A status
 
-# 1. What Kind of Search Engine You Should Build First
+Phase A deliverables are implemented:
 
-Before tools, define scope.
+1. Domain and relevance specification.
+2. Architecture/service contracts.
+3. Local development stack scaffold (FastAPI + Elasticsearch + PostgreSQL).
 
-There are **3 levels**:
+See:
 
-### Level 1 — Vertical search engine (Recommended)
+1. docs/phase-a/domain-and-relevance-spec.md
+2. docs/phase-a/service-contracts.md
+3. docs/phase-a/phase-a-checklist.md
+4. docs/phase-a/source-allowlist.md
 
-Search within a **specific domain**.
+## Project structure
 
-Examples:
+1. architecture.md: high-level architecture narrative.
+2. roadmap.md: semester-aligned roadmap and phases.
+3. timeline.md: week-by-week implementation timeline.
+4. app/api: FastAPI service scaffold.
+5. docker-compose.yml: local stack orchestration.
 
-* Jobs search
-* Research papers
-* Startup companies
-* African tech news
-* Documentation search
+## Local quickstart
 
-This is achievable in **3–4 months**.
+Prerequisites:
 
----
+1. Docker Desktop (or Docker Engine + Compose).
+2. Python 3.11+ (optional for local non-container runs).
 
-### Level 2 — Web search engine
+Start stack:
 
-Like Google or Bing.
-
-Requires:
-
-* Massive crawling
-* Distributed indexing
-* Ranking systems
-
-This is a **multi-year project**.
-
----
-
-### Level 3 — AI search engine
-
-Like Perplexity AI or You.com.
-
-Combines:
-
-* search
-* embeddings
-* LLM reasoning
-
----
-
-For learning and impact, build:
-
-**Vertical AI-powered search engine**
-
----
-
-# 2. Recommended Technology Stack
-
-## Programming Language
-
-### Backend
-
-**Python**
-
-Reasons:
-
-* best ecosystem for search & AI
-* strong crawling libraries
-* ML ecosystem
-
-Framework:
-
-**FastAPI**
-
-Why:
-
-* faster than Express
-* async support
-* great for APIs
-
----
-
-### Crawling Language
-
-Python with:
-
-* **Scrapy**
-* **Playwright**
-
----
-
-### Search Engine Database
-
-Use a dedicated search engine:
-
-**Elasticsearch**
-
-Alternative:
-
-**Meilisearch**
-
-Why:
-
-* inverted index
-* full-text search
-* ranking
-* typo tolerance
-
----
-
-### Metadata Database
-
-Use:
-
-**PostgreSQL**
-
-Store:
-
-* page metadata
-* crawl status
-* user data
-* analytics
-
----
-
-### Vector Search (AI search)
-
-Use:
-
-**FAISS**
-
-or
-
-**Weaviate**
-
----
-
-### Frontend
-
-Framework:
-
-**Next.js**
-
-Features:
-
-* SSR
-* fast UI
-* SEO friendly
-
----
-
-### Message Queue
-
-For distributed crawling:
-
-**Apache Kafka**
-
-or simpler:
-
-**Redis**
-
----
-
-### Containerization
-
-**Docker**
-
----
-
-### Deployment
-
-Cloud:
-
-* Amazon Web Services
-* Google Cloud
-* DigitalOcean
-
----
-
-# 3. Core Search Engine Architecture
-
-Typical architecture:
-
-```
-            Internet
-                │
-                ▼
-           Web Crawler
-                │
-                ▼
-          Data Processing
-     (cleaning + tokenization)
-                │
-                ▼
-           Search Index
-        (Elasticsearch)
-                │
-                ▼
-            API Layer
-           (FastAPI)
-                │
-                ▼
-           Ranking Engine
-                │
-                ▼
-           Frontend UI
+```bash
+docker compose up --build
 ```
 
----
+Validate API:
 
-# 4. Core Components Explained
+1. Health: http://localhost:8000/health
+2. Search stub: http://localhost:8000/search?q=fintech
 
-## 1 Web Crawler
+Stop stack:
 
-Responsible for:
-
-* discovering pages
-* downloading HTML
-* extracting links
-
-Tools:
-
-* Scrapy
-* Playwright
-
----
-
-## 2 Parser
-
-Extracts:
-
-* title
-* text
-* keywords
-* links
-
-Libraries:
-
-* BeautifulSoup
-* lxml
-
----
-
-## 3 Indexer
-
-Builds **inverted index**.
-
-Example:
-
-```
-word → document IDs
+```bash
+docker compose down
 ```
 
-Example:
+## Next target
 
-```
-"AI" → doc1, doc4, doc20
-```
-
-This is stored in Elasticsearch.
-
----
-
-## 4 Ranking System
-
-Basic ranking:
-
-**TF-IDF**
-
-Better ranking:
-
-* BM25
-* PageRank
-* user behavior signals
-
----
-
-## 5 Query Engine
-
-Handles search queries.
-
-Example:
-
-```
-GET /search?q=machine+learning
-```
-
-Steps:
-
-1 parse query
-2 search index
-3 rank results
-4 return top 10
-
----
-
-# 5. Roadmap to Build It
-
-## Phase 1 — Foundations (2–3 weeks)
-
-Learn:
-
-* information retrieval basics
-* inverted index
-* TF-IDF
-* crawling fundamentals
-
-Resources:
-
-Book:
-
-**Introduction to Information Retrieval**
+Phase B implementation: crawler/feed ingestion, parsing pipeline, and text-statistics instrumentation.
 
 ---
 
