@@ -134,6 +134,26 @@ curl "http://localhost:8000/search?q=african%20startup%20funding&mode=bm25&page=
 curl "http://localhost:8000/search?q=african%20startup%20funding&mode=boolean&page=1&size=10"
 ```
 
+## Phase E quickstart
+
+Artifacts:
+
+1. docs/phase-e/implementation-guide.md
+2. docs/phase-e/phase-e-checklist.md
+3. app/api/src/build_eval_corpus.py
+4. app/api/src/evaluate_metrics.py
+5. app/api/src/efficiency_benchmark.py
+6. app/api/src/tune_significance.py
+
+Run evaluation workflow:
+
+```bash
+python app/api/src/build_eval_corpus.py
+python app/api/src/evaluate_metrics.py
+python app/api/src/efficiency_benchmark.py
+python app/api/src/tune_significance.py
+```
+
 ---
 
 ## Phase 2 — Basic Search Engine (4 weeks)
