@@ -1,75 +1,98 @@
-# Development Timeline: 5‑Month Plan
+# Development Timeline (DSC608 Semester Plan)
 
-This document converts the roadmap phases into a detailed calendar of tasks. The schedule assumes a solo engineer dedicating roughly 30–40 hours per week. Adjust durations if working with a team.
-
----
-
-## Month 1 – Foundations & Core Proof‑of‑Concept
-
-| Week | Focus | Tasks |
-|------|-------|-------|
-| 1 | IR basics & environment | Read key chapters of *Introduction to Information Retrieval*; choose domain; set up repos and dev env; sketch architecture. |
-| 2 | Crawling prototype | Build simple Scrapy spider; crawl 100 pages; store URLs in PostgreSQL; parse HTML. |
-| 3 | Indexing prototype | Design ES mapping; index ~1k documents; implement search API returning raw hits. |
-| 4 | Basic ranking & UI stub | Add TF‑IDF/BM25 ranking; create minimal Next.js page with search box; deploy locally with Docker Compose. |
-
-**Milestones**: search API returns results; initial dataset crawled.
+This timeline maps the implementation directly to the DSC608 2023-2024 week structure (13 teaching weeks, 2 slots per week, with review/CA windows).
 
 ---
 
-## Month 2 – Query Features & Usability
+## Weeks 1-2: IR Orientation and Architecture
 
-| Week | Focus | Tasks |
-|------|-------|-------|
-| 5 | Advanced query syntax | Implement phrase search, field filters, and URL/site restriction. |
-| 6 | Typo tolerance & autocomplete | Enable fuzzy matching; configure n‑gram analyzers; add frontend autocomplete. |
-| 7 | Metadata & facets | Index additional fields; add filtering/faceting endpoints; update UI with facets. |
-| 8 | Ranking experiments | Run PageRank, adjust BM25; log preliminary user clicks. |
+| Week | Course Theme | Implementation Focus | Output |
+|---|---|---|---|
+| 1 | Intro to IR, ad-hoc retrieval, system classification | Define retrieval scope, target corpus, relevance criteria, and acceptance metrics | Project charter and evaluation goals |
+| 2 | Search engine architecture building blocks | Freeze service boundaries: acquisition, transformation, indexing, ranking, query interface, evaluation | Architecture baseline and service contracts |
 
-**Milestones**: rich query language working; rudimentary frontend with facets.
+Milestone: architecture and measurable objectives approved.
 
 ---
 
-## Month 3 – AI & Semantic Capabilities
+## Weeks 3-4: Crawls, Feeds, and Text Transformation Core
 
-| Week | Focus | Tasks |
-|------|-------|-------|
-| 9 | Embedding infrastructure | Choose model; write script to batch‑embed existing documents; store vectors in FAISS. |
-| 10 | Semantic query handling | Embed queries; implement k‑NN search; merge with keyword results. |
-| 11 | Evaluation & tuning | Build small test set; compute NDCG/precision; adjust hybrid weights. |
-| 12 | Feature polish | Add "similar documents" suggestions; implement natural‑language fallback. |
+| Week | Course Theme | Implementation Focus | Output |
+|---|---|---|---|
+| 3 | Crawls and feeds | Build crawler/feed ingestion, storage of raw docs, duplicate and noise checks | Running ingestion pipeline |
+| 4 | Processing text Ia/Ib | Implement parsing, tokenization, stopping, stemming, phrase and n-gram support | Transformation module with tests |
 
-**Milestones**: `/semantic_search` endpoint returns sensible results.
+Milestone: transformed document objects ready for indexing.
 
 ---
 
-## Month 4 – Scaling & Deployment
+## Weeks 5-6: Structure-Aware Processing and Indexing
 
-| Week | Focus | Tasks |
-|------|-------|-------|
-| 13 | Distributed crawling | Containerize crawler; configure Kafka/Redis queue; deploy multi‑worker setup. |
-| 14 | Monitoring & logging | Add Prometheus exporters; configure Grafana dashboards; set up ELK. |
-| 15 | Caching & performance | Introduce Redis query cache; run load tests; optimize ES queries. |
-| 16 | CI/CD & security | Create GitHub Actions workflows; add API key auth; set up HTTPS. |
+| Week | Course Theme | Implementation Focus | Output |
+|---|---|---|---|
+| 5 | Processing text Ic + review | Add markup/link-aware parsing and extraction of structural fields | Enriched document schema |
+| 6 | Ranking with indexes I/II | Build inverted index pipeline, index mappings, and query-time lookup path | Searchable index and baseline query API |
 
-**Milestones**: deployment to cloud with monitoring; handle 100k queries/day.
+Milestone: end-to-end lexical search is operational.
 
 ---
 
-## Month 5 – Feature Expansion & Hardening
+## Week 7: Consolidation and CA Checkpoint
 
-| Week | Focus | Tasks |
-|------|-------|-------|
-| 17 | UX improvements | Build user accounts; add saved searches and personalization. |
-| 18 | Metrics & A/B testing | Instrument CTR/dwell time; run first A/B test on ranking or UI. |
-| 19 | Additional domains | Extend crawler to new verticals; refine parsing rules. |
-| 20 | Long‑term planning | Write product roadmap; document APIs; begin exploring multi‑modal or conversational search. |
+| Week | Course Theme | Implementation Focus | Output |
+|---|---|---|---|
+| 7 | Tutorials, revision, CA test | Stabilize baseline engine, run smoke/load tests, package demo | CA-ready baseline release |
 
-**Milestones**: production‑ready engine with user features; documented APIs.
+Milestone: first formal checkpoint complete.
 
 ---
 
-> **Notes:**
-> - Weeks are approximations; some tasks may require more or less time.
-> - Continuous integration/testing runs throughout all phases.
-> - Reserve 1–2 hours weekly for retro and planning.
+## Weeks 8-9: Query and Interface Expansion
+
+| Week | Course Theme | Implementation Focus | Output |
+|---|---|---|---|
+| 8 | Query transformation, spell suggestions, personalization | Add query rewriting, spelling suggestions, and basic personalization hooks | Enhanced query parser |
+| 9 | Results display, snippets, clustering, cross-language awareness | Improve result rendering, snippets, and grouping logic in API/UI | Improved result UX layer |
+
+Milestone: usability-focused search experience in place.
+
+---
+
+## Weeks 9-10: Retrieval Model Broadening
+
+| Week | Course Theme | Implementation Focus | Output |
+|---|---|---|---|
+| 9-10 | Boolean, vector-space, probabilistic models | Implement model variants and compare their retrieval behavior | Model comparison benchmark |
+
+Milestone: model selection backed by measurements.
+
+---
+
+## Weeks 10-12: Evaluation-Driven Improvement
+
+| Week | Course Theme | Implementation Focus | Output |
+|---|---|---|---|
+| 10 | Why evaluate, corpus and logging | Build relevance set and logging pipeline | Evaluation dataset + logs |
+| 11 | Effectiveness metrics | Compute recall, precision, MAP/NDCG, top-k analysis | Effectiveness report |
+| 12 | Efficiency metrics and testing | Measure latency/throughput, significance checks, parameter tuning | Performance and tuning report |
+
+Milestone: validated and tuned ranking configuration.
+
+---
+
+## Weeks 12-13: Filtering, Recommendation, and Final Revision
+
+| Week | Course Theme | Implementation Focus | Output |
+|---|---|---|---|
+| 12-13 | Filtering and recommendation + revision | Add filtering/recommendation prototype and finalize documentation | Final demo package and handover docs |
+
+Milestone: semester-complete IR system aligned to course outcomes.
+
+---
+
+## Continuous Tasks (Every Week)
+
+1. Maintain test suite for crawler, parser, index, and query layers.
+2. Track text-statistics dashboards (term frequency skew, vocabulary growth).
+3. Keep weekly retrospective notes and risk register.
+4. Update roadmap and architecture after each review slot.

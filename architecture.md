@@ -1,99 +1,88 @@
-# Architectural Design for a Vertical AI‑Powered Search Engine
+# Architectural Design (DSC608-Aligned)
 
-This document describes the proposed system architecture including components, data flow, and technology choices. Diagrams use Mermaid syntax for quick visualization.
+This architecture updates the project design using the newly added DSC608 resources, especially:
+
+* Search engine building blocks (text acquisition, transformation, index creation, interaction, ranking, evaluation)
+* Processing text topics (tokenization, stopping, stemming, phrases/n-grams, document structure)
+* Retrieval and evaluation sequence (retrieval models, metrics, filtering/recommendation)
 
 ---
 
-## 1. High‑Level Overview
+## 1. Course-Driven System View
 
 ```mermaid
-flowchart TD
-    Internet((Internet)) -->|seed URLs| Crawler[Web Crawler]
-    Crawler --> Parser[HTML Parser]
-    Parser -->|documents| Indexer[Elasticsearch Index]
-    Parser -->|to embed| Embed[(Embedding Pipeline)]
-    Indexer --> API[Search API (FastAPI)]
-    Embed --> VectorDB[FAISS/Weaviate]
-    API -->|keyword hits| Ranker[Ranking Engine]
-    API -->|hybrid results| VectorDB
-    Ranker --> UI[Frontend (Next.js)]
-    UI --> Users((Users))
+flowchart LR
+    A[Text Acquisition\nCrawls + Feeds] --> B[Text Transformation\nParsing/Tokenization/Stemming]
+    B --> C[Index Creation\nInverted Index + Metadata]
+    C --> D[Ranking Engine\nBoolean/Vector/Probabilistic]
+    D --> E[Query & Interface Layer\nRefinement + Snippets]
+    E --> U[(Users)]
+
+    C --> F[Evaluation Pipeline\nRecall/Precision/Top-k]
+    E --> F
+    F --> D
+
+    E --> G[Filtering & Recommendation]
+    G --> U
 ```
 
-This architecture is modular; most components can be scaled independently and replaced as needed.
+This keeps implementation order consistent with the teaching sequence and makes each module independently testable.
 
 ---
 
-## 2. Component Breakdown
+## 2. Component Map
 
-| Component | Responsibility | Tech & Notes |
-|-----------|----------------|--------------|
-| **Crawler** | Discover and download pages, follow links | Scrapy + Playwright; respects robots.txt; distributed via Kafka/Redis queue for scale |
-| **Parser** | Extract text, metadata, links; clean and normalize | BeautifulSoup/lxml; built as a microservice or library called by crawler |
-| **Indexer** | Create inverted index and store documents | Elasticsearch; use custom analyzers (standard, n‑gram, edge‑ngram); index metadata fields for filtering |
-| **Embedding Pipeline** | Compute vector representations for docs and queries | SentenceTransformers; batch process on GPU/CPU; store in FAISS or Weaviate; update incrementally as new docs arrive |
-| **Search API** | Handle client queries, orchestrate searches | FastAPI; endpoints `/search`, `/semantic_search`, `/doc/{id}`; input validation; caching layer (Redis) to store frequent query results |
-| **Ranking Engine** | Combine signals and produce ordered results | BM25 from ES, PageRank scores, clickthrough logs, semantic similarity; implemented as Python module invoked by API service |
-| **Frontend** | User interface | Next.js with SSR; components for search box, results, facets, login; communicates with API via REST/JSON |
-| **Metadata DB** | Persistent relational store | PostgreSQL; stores crawl status, user accounts, analytics, configuration settings |
-| **Message Queue** | Decouples producers and consumers | Apache Kafka or Redis Streams; used in crawling and embedding pipelines |
-| **Vector Database** | ANN search for vectors | FAISS (local), Weaviate (managed), or similar; exposes k‑NN APIs to the API service |
-| **Monitoring & Logging** | Observability | Prometheus for metrics; Grafana dashboards; ELK/EFK stack for logs; alerting via PagerDuty/Slack |
+| Course block | Architecture component | Responsibilities | Core stack |
+|---|---|---|---|
+| Crawls and feeds | Acquisition service | Seed management, crawling, duplicate detection, noise removal, feed ingestion | Scrapy, Playwright, PostgreSQL |
+| Processing text | Transformation service | Parsing, tokenization, normalization, stopword removal, stemming, phrase/n-gram extraction, markup handling | BeautifulSoup/lxml, spaCy/NLTK |
+| Ranking with indexes | Index service | Dictionary/postings build, metadata indexing, incremental updates, query-time lookup | Elasticsearch/OpenSearch |
+| Queries and interfaces | Query service + UI | Query parsing, spell suggestions, expansion, faceting, snippets, result rendering | FastAPI, Next.js |
+| Retrieval models | Retrieval layer | Boolean baseline, vector-space (TF-IDF/BM25), probabilistic scoring | Python ranking module |
+| Evaluating search engines | Evaluation service | Offline metrics (Recall, Precision, MAP/NDCG), online logs, parameter tuning | Python notebooks/scripts, PostgreSQL |
+| Filtering and recommendation | Personalization service | Rule-based/document filtering, recommendation candidates, optional collaborative filtering | Redis/PostgreSQL, optional vector DB |
 
 ---
 
-## 3. Data Flow
+## 3. Logical Data Flow
 
-1. **Crawling**: 
-   * Seeds are inserted into PostgreSQL with status `pending`.
-   * Crawler workers pull next URL from queue, fetch content, and push HTML to parser service.
-
-2. **Parsing & Indexing**: 
-   * Parser extracts text and metadata; returns JSON document.
-   * Document is sent to Elasticsearch for indexing and to embedding pipeline.
-   * Embedder computes vector and writes to FAISS/Weaviate.
-
-3. **Query Handling**:
-   * Client sends query to FastAPI.
-   * API runs keyword search against ES; receives hits with scores.
-   * API optionally computes query embedding and performs ANN search.
-   * Ranking engine merges ES scores with vector similarity and other signals.
-   * Final result list returned to frontend.
-
-4. **Feedback Loop**:
-   * User clicks logged to PostgreSQL or a dedicated analytics store.
-   * Periodic jobs compute query reformulation statistics and update ranking weights.
+1. Acquisition collects raw documents and stores crawl metadata.
+2. Transformation produces normalized terms and structured document fields.
+3. Index service writes searchable fields and postings to Elasticsearch.
+4. Query service parses user intent and dispatches to retrieval layer.
+5. Retrieval layer scores candidates using configured model mix.
+6. UI receives ranked results with snippets, filters, and query suggestions.
+7. Evaluation pipeline consumes logs and relevance labels to refine ranking.
 
 ---
 
-## 4. Scaling & Resilience
+## 4. Text-Statistics Instrumentation
 
-* **Horizontal scaling**: Each service runs in Docker containers managed by Kubernetes or ECS.  
-* **Stateless design**: Crawler, parser, API, and ranker are stateless; state lives in queue/DBs.  
-* **Index sharding**: Elasticsearch index split across nodes; replica shards for fault tolerance.  
-* **Backpressure**: Kafka queues allow producers to write faster than consumers process; consumers scale out.  
-* **Cache layer**: Redis caches top queries and document metadata to reduce load on ES.
-* **Health checks**: Kubernetes liveness/readiness probes ensure unhealthy pods restart.
+To reflect DSC608 text-statistics content, the system should explicitly track:
 
----
+* Term frequency distribution to validate Zipf-like behavior.
+* Vocabulary growth over corpus size to monitor Heaps-like trends.
+* Result set size estimates before full query execution for interface hints.
 
-## 5. Security Considerations
-
-* All external traffic passes through HTTPS with TLS termination.
-* API endpoints require API keys or OAuth tokens; rate limits applied using Redis.
-* Crawler respects robots.txt and uses rotating IPs if necessary.
-* Elasticsearch is secured with authentication and network ACLs (VPC or firewall).  
-* Sensitive configuration values (API keys, DB credentials) stored in Vault or Kubernetes Secrets.
+These metrics become part of the evaluation dashboard and influence tokenizer, stopword list, and index analyzer updates.
 
 ---
 
-## 6. Development Principles
+## 5. Deployment and Reliability
 
-* **Modularity** – write components as small services with well‑defined interfaces.  
-* **Testability** – each module has unit and integration tests; mocks for external systems.  
-* **Observability** – instrument code early with metrics and structured logs.  
-* **Incrementality** – deploy minimal working system first, then add features.  
-* **Documentation** – generate API docs (e.g., OpenAPI) and maintain architecture diagrams.
+* Containerized services via Docker Compose first, Kubernetes later.
+* Queue-based decoupling between acquisition and processing.
+* Redis cache for frequent queries and spell suggestions.
+* Observability: Prometheus metrics + Grafana dashboards + structured logs.
+* Security baseline: HTTPS, API keys/JWT, secrets in environment manager.
 
+---
 
-> _This design is a living document; revisit as the system grows or requirements change._
+## 6. Design Principles
+
+* Build in the same order as the course progression.
+* Keep a measurable baseline before adding advanced features.
+* Treat evaluation as a continuous subsystem, not a final step.
+* Support iterative upgrades from lexical retrieval to hybrid/AI retrieval.
+
+> This architecture is intentionally semester-aligned and should be revised after each major review/test checkpoint.

@@ -1,181 +1,128 @@
-# Project Roadmap: Vertical AI-Powered Search Engine
+# Project Roadmap (Aligned to DSC608 2023-2024)
 
-This document presents a comprehensive roadmap for building a vertical, AI-enhanced search engine. It is organised into clearly defined phases with milestones, required skills, and suggested deliverables for each stage.
-
----
-
-## 1. Phase 0 – Preparation & Research (1–2 weeks)
-
-* **Objectives**
-  * Understand core concepts of information retrieval (IR).
-  * Finalise domain/niche for the vertical engine.
-  * Assemble technology stack and development environment.
-
-* **Key Activities**
-  1. Read *Introduction to Information Retrieval* (Chapters 1–4).
-  2. Explore sample datasets within chosen domain (e.g. open‑access papers, job listings).
-  3. Prototype simple TF‑IDF calculator in Python.
-  4. Set up version control, issue tracker, and basic repo structure.
-  5. Prepare development environment: Python venv, Docker, PostgreSQL/Elasticsearch containers.
-
-* **Deliverables**
-  * Domain specification document (target users, sources).
-  * Glossary of IR terms.
-  * Basic proof‑of‑concept script computing term frequencies.
+This roadmap is now tied to the DSC608 course progression and the new course resources in assets. It moves from core IR foundations to evaluation and recommendation in the same order used in the semester.
 
 ---
 
-## 2. Phase 1 – Core Engine & Crawler (4 weeks)
+## 1. Phase A: Foundations and Architecture (Weeks 1-3)
 
-* **Objectives**
-  * Develop an end‑to‑end pipeline from URL discovery to search API response.
+* Objectives
+  * Align project scope with ad-hoc retrieval tasks and target users.
+  * Finalize system architecture based on standard IR building blocks.
 
-* **Key Activities**
-  1. **Crawler**
-     - Build Scrapy/Playwright spiders.
-     - Handle politeness (robots.txt, rate limits).
-     - Store crawl state in PostgreSQL (URL queue, status, last‑seen).
-  2. **Parser**
-     - Strip HTML, extract title, text, metadata, and outgoing links using BeautifulSoup/lxml.
-     - Normalize text (lowercase, remove stopwords, tokenize).
-  3. **Indexer**
-     - Design Elasticsearch index mappings (analyzers, fields, metadata).
-     - Write Python code to feed parsed documents into ES.
-     - Implement bulk indexing with error handling.
-  4. **Search API**
-     - FastAPI service exposing `/search` and `/document/{id}` endpoints.
-     - Integrate ES query DSL (match, boolean queries).
-     - Add pagination, simple ranking by score.
+* Key activities
+  1. Define domain corpus, relevance assumptions, and success criteria.
+  2. Produce architecture baseline: text acquisition, transformation, indexing, interaction, ranking, evaluation.
+  3. Set up development stack: Python, FastAPI, Elasticsearch, PostgreSQL, Docker.
 
-* **Deliverables**
-  * `crawler/` module with spider and scheduler.
-  * `parser/` module and unit tests.
-  * Elasticsearch index configured & populated with initial data.
-  * Running FastAPI service returning keyword search results.
-
-* **Milestones**
-  1. Crawl 1,000 pages from target domain.
-  2. First successful query via API.
-  3. Continuous integration pipeline running basic tests.
+* Deliverables
+  * Problem statement and relevance definition.
+  * Architecture diagram and component contracts.
+  * Local development environment and seed dataset.
 
 ---
 
-## 3. Phase 2 – Rich Query Features (4 weeks)
+## 2. Phase B: Crawls, Feeds, and Text Transformation (Weeks 3-6)
 
-* **Objectives**
-  * Improve the quality of search results and usability.
+* Objectives
+  * Build a reliable ingestion pipeline and clean textual representation.
 
-* **Key Activities**
-  1. **Ranking Enhancements**
-     - Experiment with BM25 parameters.
-     - Add PageRank calculation over crawled graph.
-     - Collect basic user feedback (click logs) and integrate signals.
-  2. **Query Parsing**
-     - Support phrase search (`"exact phrase"`).
-     - Implement fielded search (e.g. `title:python site:example.com`).
-     - Add filter and facet support.
-  3. **Typo Tolerance**
-     - Enable fuzzy matching in Elasticsearch.
-     - Use n‑gram/edge‑ngram analyzers for autocomplete.
-  4. **Advanced Indexing**
-     - Store additional metadata (publish date, author, tags).
-     - Pre‑compute and store document vectors for hybrid search.
-  5. **User Interface (stub)**
-     - Simple HTML/Next.js page calling the search API.
+* Key activities
+  1. Implement web/document feed ingestion and crawl-state tracking.
+  2. Add duplicate detection and noise removal.
+  3. Implement parsing, tokenization, stopping, stemming, and n-gram extraction.
+  4. Add text-statistics instrumentation (frequency distribution and vocabulary growth).
 
-* **Deliverables**
-  * Extended search API with filtering and advanced query syntax.
-  * Benchmarks comparing TF‑IDF vs. BM25 vs. hybrid scoring.
-  * Frontend prototype with autocomplete and facets.
+* Deliverables
+  * Working crawler/parser pipeline.
+  * Clean document schema for indexing.
+  * Text-statistics report (Zipf/Heaps observations on your corpus).
 
-* **Milestones**
-  1. Deployable 2‑page UI (search box + results).
-  2. Successful handling of 10,000 concurrent queries (load test).
+* Milestone
+  1. Usable corpus snapshot with transformed terms and metadata.
 
 ---
 
-## 4. Phase 3 – AI & Semantic Search (4 weeks)
+## 3. Phase C: Indexing and Baseline Ranking (Weeks 6-8)
 
-* **Objectives**
-  * Integrate embedding‑based search for semantic understanding.
+* Objectives
+  * Deliver first complete search loop from query to ranked results.
 
-* **Key Activities**
-  1. **Embedding Generation**
-     - Select a model (e.g. `all-MiniLM-L6-v2` from SentenceTransformers).
-     - Batch‑embed documents during indexing; store vectors in FAISS or Weaviate.
-  2. **Query Embeddings**
-     - Convert incoming queries to vectors.
-     - Perform nearest‑neighbor search (ANN) and merge with keyword results.
-  3. **Hybrid Ranking**
-     - Combine ES score and cosine similarity via weighted sum.
-     - Tuning weights based on sample queries.
-  4. **Interactive Features**
-     - Support natural‑language queries (“papers about transformer models”).
-     - Add “Did you mean?” or “Related topics” suggestions using embeddings.
+* Key activities
+  1. Build inverted index and query-processing path.
+  2. Implement baseline retrieval models (Boolean and vector-space/BM25).
+  3. Expose `/search` API with pagination and snippets.
 
-* **Deliverables**
-  * Semantically‑aware search endpoint (`/semantic_search`).
-  * FAISS index built and updated incrementally.
-  * Evaluation report showing improvements on sample queries.
+* Deliverables
+  * Indexed corpus in Elasticsearch/OpenSearch.
+  * Search API returning ranked results.
+  * Baseline retrieval benchmark.
 
-* **Milestones**
-  1. 20‑point increase in NDCG on held‑out query set.
-  2. Real‑time embedding pipeline running within 100 ms per document.
+* Milestone
+  1. CA checkpoint readiness: stable and demonstrable baseline engine.
 
 ---
 
-## 5. Phase 4 – Scaling & Distribution (6–8 weeks)
+## 4. Phase D: Queries, Interfaces, and Retrieval Expansion (Weeks 8-10)
 
-* **Objectives**
-  * Prepare system for production load and distributed operation.
+* Objectives
+  * Improve search usability and retrieval quality.
 
-* **Key Activities**
-  1. **Distributed Crawler**
-     - Use Kafka/Redis queue to distribute URLs among multiple workers.
-     - Containerize crawler with Docker; orchestrate with Docker Compose or Kubernetes.
-  2. **Data Pipeline**
-     - Implement ETL stages: crawl → parse → index → embed.
-     - Add back‑pressure and retry logic.
-  3. **Caching & CDN**
-     - Add Redis or Varnish layer for frequently seen queries.
-     - Serve static frontend assets via CDN (e.g. CloudFront).  
-  4. **Monitoring & Logging**
-     - Integrate Prometheus & Grafana for metrics (crawls/sec, qps, latency).
-     - Centralize logs with ELK/EFK stack.
-  5. **Security & Access Control**
-     - Add API key/token authentication.
-     - Rate‑limit abusive clients; implement CORS policies.
-  6. **Continuous Deployment**
-     - Set up CI/CD (GitHub Actions) to build images and deploy to cloud.
+* Key activities
+  1. Add query transformation, spell suggestions, and refinement.
+  2. Implement phrase queries, filters, and faceting.
+  3. Extend ranking to probabilistic model variant and compare with baseline.
+  4. Build UI features for result snippets and relevance-oriented interaction.
 
-* **Deliverables**
-  * Multi‑worker crawler running in cloud (AWS/GCP/DO).
-  * Auto‑scaling search API behind load‑balancer.
-  * Full observability dashboard with alerting rules.
-
-* **Milestones**
-  1. Handle 100 k DAS per day with <200 ms 99th‑percentile latency.
-  2. Zero‑downtime deployments via rolling updates.
+* Deliverables
+  * Extended query parser and interface layer.
+  * Retrieval model comparison report.
+  * Improved result page UX.
 
 ---
 
-## 6. Phase 5 – Product & UX Polishing (ongoing)
+## 5. Phase E: Evaluation and Tuning (Weeks 10-12)
 
-* **Objectives**
-  * Improve usability, add user features, iterate based on analytics.
+* Objectives
+  * Make relevance measurable and improve ranking with evidence.
 
-* **Key Activities**
-  - Add user accounts, saved searches, and personalization.
-  - Analyze click‑through and dwell‑time for ranking signals.
-  - Implement A/B tests for UI changes.
-  - Expand crawl scope (additional domains) and re‑train ranking models.
-  - Explore multi‑modal search (images/audio) and conversational interfaces.
+* Key activities
+  1. Build evaluation corpus and relevance judgements.
+  2. Compute effectiveness metrics: Recall, Precision, MAP/NDCG, top-k quality.
+  3. Add efficiency checks: indexing time, latency, throughput.
+  4. Run parameter tuning and significance checks.
 
-* **Deliverables**
-  * Roadmap for next 6‑12 months.
-  * Design system for frontend components.
-  * Documentation and API reference for external developers.
+* Deliverables
+  * Evaluation toolkit and reproducible reports.
+  * Tuned ranking configuration with measured gains.
+
+* Milestone
+  1. Documented improvement over initial baseline on agreed metrics.
 
 ---
 
-> _The roadmap is iterative; phases may overlap and priorities will shift depending on user feedback and technical discoveries._
+## 6. Phase F: Filtering, Recommendation, and Final Hardening (Week 12-13+)
+
+* Objectives
+  * Add user-facing intelligence beyond pure ranked retrieval.
+
+* Key activities
+  1. Implement filtering module (rule-based and profile-aware).
+  2. Add recommendation prototype (content-based first, collaborative optional).
+  3. Final documentation, revision, and release packaging.
+
+* Deliverables
+  * Filtering and recommendation feature set.
+  * Final technical report and demo script.
+  * Next-iteration backlog (semantic/hybrid expansion).
+
+---
+
+## 7. Cross-Cutting Practices (All Phases)
+
+* Version control discipline and weekly milestone reviews.
+* Unit/integration testing for pipeline and query behavior.
+* Monitoring for crawl/index/query stages.
+* Continuous documentation updates after each review week.
+
+> This roadmap is semester-aware and should be updated at each review/revision slot.
