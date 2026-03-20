@@ -8,7 +8,7 @@ Script: app/pipeline/src/index_documents.py
 
 Actions:
 1. Ensures Elasticsearch index exists with baseline mapping.
-2. Loads parsed documents from PostgreSQL.
+2. Loads parsed documents from the pipeline database (SQLite by default; PostgreSQL when `DATABASE_URL` is set).
 3. Bulk-indexes documents into Elasticsearch.
 
 ## 2. Baseline retrieval models
