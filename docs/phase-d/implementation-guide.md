@@ -51,7 +51,7 @@ Outputs:
 ## 5. Quick usage examples
 
 ```bash
-curl "http://localhost:8000/search?q=african fintech fundraise&mode=probabilistic"
-curl "http://localhost:8000/search?q=african startup\" &phrase=mobile%20payments&source=TechCabal&facets=true"
+curl "http://localhost:8000/search?q=african%20fintech%20fundraise&mode=probabilistic"
+curl "http://localhost:8000/search?q=african%20startup&phrase=mobile%20payments&source=TechCabal&facets=true"
 curl "http://localhost:8000/search/suggest?q=fintch"
 ```
