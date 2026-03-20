@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-03-20T17:06:41.804868",
+  "source_effectiveness_report": "D:\\charlesDevelopment\\information_retrieval\\docs\\phase-e\\effectiveness_report_20260320_170054.json",
+  "best_mode_by_ndcg_map": {
+    "mode": "bm25",
+    "ndcg@10": 0.0,
+    "map@10": 0.0
+  },
+  "mode_ranking": [
+    {
+      "mode": "bm25",
+      "ndcg@10": 0.0,
+      "map@10": 0.0
+    },
+    {
+      "mode": "boolean",
+      "ndcg@10": 0.0,
+      "map@10": 0.0
+    },
+    {
+      "mode": "probabilistic",
+      "ndcg@10": 0.0,
+      "map@10": 0.0
+    }
+  ],
+  "significance": {
+    "comparison": "probabilistic vs bm25 on ndcg@10",
+    "queries_compared": [
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5"
+    ],
+    "p_value": 1.0,
+    "alpha": 0.05,
+    "is_significant": false,
+    "method": "paired randomization test"
+  }
+}
