@@ -11,6 +11,7 @@ from app.api.src.filtering_recommendation import (
     rerank_with_profile,
 )
 from app.api.src.main import recommendations, search
+from app.api.src.ui_page import render_ui_html
 
 
 class FilteringRecommendationTests(unittest.TestCase):
@@ -83,6 +84,13 @@ class FilteringRecommendationTests(unittest.TestCase):
 
 
 class PhaseFEndpointTests(unittest.TestCase):
+    def test_root_ui_page_serves_html(self) -> None:
+        html = render_ui_html()
+        self.assertIn("<html", html.lower())
+        self.assertIn("Phase F Search Studio", html)
+        self.assertIn("/search", html)
+        self.assertIn("/recommendations", html)
+
     @patch("app.api.src.main.local_search_extended")
     @patch("app.api.src.main.get_search_backend")
     def test_search_applies_filtering_and_profile_summary(self, backend_mock, local_search_mock) -> None:

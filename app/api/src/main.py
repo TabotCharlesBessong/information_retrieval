@@ -2,6 +2,7 @@ from typing import Literal
 
 from elasticsearch import ApiError
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from .filtering_recommendation import (
@@ -23,9 +24,15 @@ from .search_backend import (
     make_snippet,
     refine_query,
 )
+from .ui_page import render_ui_html
 
 
 app = FastAPI(title="Information Retrieval API", version="0.1.0")
+
+
+@app.get("/", response_class=HTMLResponse)
+def ui_home() -> HTMLResponse:
+    return HTMLResponse(content=render_ui_html())
 
 
 class SearchItem(BaseModel):
